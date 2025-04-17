@@ -13,6 +13,8 @@ config({
     path: "./database/config.env"
 });
 
+
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
@@ -21,7 +23,9 @@ app.use(cors({
     credentials: true
 }))
 
-
+app.get("/",(req,res)=> {
+    res.send("Done Bro")
+})
 app.use("/api/v1/user",router);
 app.use("/api/v1/task",taskRouter);
 
