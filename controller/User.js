@@ -1,4 +1,5 @@
 import { userModel } from "../models/UserModel.js";
+import { ErrorHandler } from "../middlewares/error.js";
 import bcrypt from "bcrypt";
 import { sendCookie } from "../utils/feture.js";
 
@@ -10,21 +11,21 @@ export const getAllUser = async(req, res) => {
     })
 }
 
-export const login = async(req,res)=> {
+export const login = async(req,res, next)=> {
  const {email, password} = req.body;
 
  const user = await userModel.findOne({email}).select("+password");
 
  if(!user) {
-    return next(new Error('User already exists'))
+    return  next(new ErrorHandler("User Is Not Find !!!",404))
  }
 
  const comparePass = await bcrypt.compare(password, user.password) ;
  
- if(comparePass) {
-
-    sendCookie(user,res,`Welecome ${user.name} , now you are log in`,201)
- }
+ if(!comparePass) {
+     return next(new ErrorHandler("User and Password are wornged!!!",403))
+    }
+  sendCookie(user,res,`Welecome ${user.name} , now you are log in`,201)
 
 }
 
@@ -34,7 +35,7 @@ export const register = async(req, res, next) => {
     const user = await userModel.findOne({email});
   
     if(user) {
-        return next(new Error('User already exists'));
+        return next(new ErrorHandler("User Already Exits!!!",404));
     }
    const decodePass = await bcrypt.hash(password,10)
       await userModel.create({
