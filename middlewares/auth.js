@@ -8,7 +8,7 @@ export const isAuth = async(req, res, next) => {
         return res.json({
             success:false,
             data:token,
-            message: "You are not login!!!"
+            message: "You are not auth login!!!"
         })
        }
        const decodeUser = jwt.verify(token,process.env.KEY);
